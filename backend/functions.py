@@ -45,22 +45,36 @@ def convert_dict(listing):
         "status": listing.status,
     }
 
-
 # E1 gets available listings
 def get_listings(subject=None, condition=None, max_price=None):
     session = Session(engine)
-    query = session.query(Listing).filter(Listing.status == "available")
-    if subject is not None:
-        query = query.filter(Listing.subject == subject)
-    if condition is not None:
-        query = query.filter(Listing.condition == condition)
-    if max_price is not None:
-        query = query.filter(Listing.price <= max_price)
-
     result = []
-    for listing in query.all():
-        result.append(convert_dict(listing))
+    for listing in session.query(Listing).all():
+        if listing.status == "available":
+            result.append(convert_dict(listing))
     session.close()
+
+    if subject is not None:
+        by_subject = []
+        for item in result:
+            if item["subject"] == subject:
+                by_subject.append(item)
+        result = by_subject
+
+    if condition is not None:
+        by_condition = []
+        for item in result:
+            if item["condition"] == condition:
+                by_condition.append(item)
+        result = by_condition
+
+    if max_price is not None:
+        by_price = []
+        for item in result:
+            if item["price"] <= max_price:
+                by_price.append(item)
+        result = by_price
+
     return result
 
 
@@ -74,14 +88,15 @@ def get_listing(listing_id):
 
     data = convert_dict(listing)
     data["offers"] = []
-    for offer in session.query(Offer).filter(Offer.listing_id == listing_id).all():
-        data["offers"].append({
-            "id": offer.id,
-            "buyer_roll": offer.buyer_roll,
-            "offer_price": offer.offer_price,
-            "status": offer.status,
-            "offered_on": offer.offered_on,
-        })
+    for offer in session.query(Offer).all():
+        if offer.listing_id == listing_id:
+            data["offers"].append({
+                "id": offer.id,
+                "buyer_roll": offer.buyer_roll,
+                "offer_price": offer.offer_price,
+                "status": offer.status,
+                "offered_on": offer.offered_on,
+            })
     session.close()
     return data
 
