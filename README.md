@@ -24,6 +24,6 @@ One SQLite file, `textbook.db`, with two tables:
 | E5 | Remove listing | | | | | | Aryan |
 | E6 | Make an offer | | | | | | Aryan |
 | E7 | Accept/decline offer | | | | | | Aryan |
-| E8 | Mark sold | | | | | | Darsh |
-| E9 | Student's listings | | | | | | Darsh |
-| E10 | Student's offers | | | | | | Darsh |
+| E8 | Mark sold | PATCH | /listings/{listing_id}/sold | seller_roll | 200 | 400 (listing is not reserved), 403 (roll number is not seller’s), 404 (listing id doesn’t exist), 422 (missing or empty roll number) | Darsh |
+| E9 | Student's listings | GET | /students/{roll_no}/listings | none | 200 |  | Darsh |
+| E10 | Student's offers | GET | /students/{roll_no}/offers | none | 200 |  | Darsh |
