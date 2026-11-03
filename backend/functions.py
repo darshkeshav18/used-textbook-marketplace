@@ -1,7 +1,6 @@
 from sqlalchemy import Integer, String, Column, DateTime, create_engine
 from sqlalchemy.orm import Session, declarative_base
 from datetime import datetime
-from fastapi import HTTPException
 
 DB_PATH = "textbook.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
@@ -49,6 +48,17 @@ def convert_dict(listing):
     }
 
 
+def convert_offer_dict(offer):
+    return {
+        "id": offer.id,
+        "listing_id": offer.listing_id,
+        "buyer_roll": offer.buyer_roll,
+        "offer_price": offer.offer_price,
+        "status": offer.status,
+        "offered_on": offer.offered_on,
+    }
+
+
 # E1 gets available listings
 def get_listings(subject=None, condition=None, max_price=None):
     session = Session(engine)
@@ -78,13 +88,7 @@ def get_listing(listing_id):
     data = convert_dict(listing)
     data["offers"] = []
     for offer in session.query(Offer).filter(Offer.listing_id == listing_id).all():
-        data["offers"].append({
-            "id": offer.id,
-            "buyer_roll": offer.buyer_roll,
-            "offer_price": offer.offer_price,
-            "status": offer.status,
-            "offered_on": offer.offered_on,
-        })
+        data["offers"].append(convert_offer_dict(offer))
     session.close()
     return data
 
@@ -121,79 +125,34 @@ def update_price(listing_id, new_price):
     return data
 
 
-# E5: Remove listing
-def remove_listing(id, seller_roll):
-    if not seller_roll:
-        raise HTTPException(status_code=422, detail="Seller roll is required.")
-
+# E5 remove a listing
+def delete_listing(listing_id):
     session = Session(engine)
-    listing = session.get(Listing, id)
-    if listing is None:
-        session.close()
-        raise HTTPException(status_code=404, detail="Listing not found.")
-
-    if listing.seller_roll != seller_roll:
-        session.close()
-        raise HTTPException(status_code=403, detail="You're not allowed to do this.")
-
-    if listing.status != "available":
-        session.close()
-        raise HTTPException(status_code=400, detail="Cannot remove a listing that is not available.")
-
-    # Remove any offers for this listing
-    offers = session.query(Offer).filter(Offer.listing_id == id).all()
-    for offer in offers:
-        session.delete(offer)
-
-    session.delete(listing)
-    session.commit()
+    listing = session.get(Listing, listing_id)
+    if listing is not None:
+        for offer in session.query(Offer).filter(Offer.listing_id == listing_id).all():
+            session.delete(offer)
+        session.delete(listing)
+        session.commit()
     session.close()
     return {"message": "Listing removed successfully"}
 
 
-# E6: Make an offer
-def make_offer(listing_id, buyer_roll, offer_price):
-    if not buyer_roll:
-        raise HTTPException(status_code=422, detail="Buyer roll is required.")
-
-    if offer_price is None:
-        raise HTTPException(status_code=422, detail="Offer price is required.")
-
-    try:
-        offer_price = int(offer_price)
-    except (ValueError, TypeError):
-        raise HTTPException(status_code=422, detail="Offer price must be a valid number.")
-
-    if offer_price < 1:
-        raise HTTPException(status_code=422, detail="An offer price must be between 1 and the asking price.")
-
+# E6 helper: check if buyer already has a pending offer on this listing
+def has_pending_offer(listing_id, buyer_roll):
     session = Session(engine)
-    listing = session.get(Listing, listing_id)
-    if listing is None:
-        session.close()
-        raise HTTPException(status_code=404, detail="Listing not found.")
-
-    if offer_price > listing.price:
-        session.close()
-        raise HTTPException(status_code=422, detail="An offer price must be between 1 and the asking price.")
-
-    if listing.seller_roll == buyer_roll:
-        session.close()
-        raise HTTPException(status_code=400, detail="You can't make an offer on your own book.")
-
-    if listing.status != "available":
-        session.close()
-        raise HTTPException(status_code=400, detail="Listing is not available.")
-
-    existing_offer = session.query(Offer).filter(
+    existing = session.query(Offer).filter(
         Offer.listing_id == listing_id,
         Offer.buyer_roll == buyer_roll,
         Offer.status == "pending"
     ).first()
-    if existing_offer:
-        session.close()
-        raise HTTPException(status_code=400, detail="You already have a pending offer on this listing.")
+    session.close()
+    return existing is not None
 
+
+# E6 make an offer
+def add_offer(listing_id, buyer_roll, offer_price):
+    session = Session(engine)
     offer = Offer(
         listing_id=listing_id,
         buyer_roll=buyer_roll,
@@ -203,60 +162,39 @@ def make_offer(listing_id, buyer_roll, offer_price):
     )
     session.add(offer)
     session.commit()
-
-    response = {
-        "id": offer.id,
-        "listing_id": offer.listing_id,
-        "buyer_roll": offer.buyer_roll,
-        "offer_price": offer.offer_price,
-        "status": offer.status,
-        "offered_on": offer.offered_on
-    }
+    data = convert_offer_dict(offer)
     session.close()
-    return response
+    return data
 
 
-# E7: Accept or decline offer
-def accept_or_decline_offer(id, seller_roll, action):
-    if not seller_roll:
-        raise HTTPException(status_code=422, detail="Seller roll is required.")
-
-    if not action:
-        raise HTTPException(status_code=422, detail="Action is required.")
-
-    action_lower = str(action).lower().strip()
-    if action_lower not in ["accept", "accepted", "decline", "declined"]:
-        raise HTTPException(status_code=422, detail="Action must be 'accept' or 'decline'.")
-
+# E7 helper: get one offer by id
+def get_offer(offer_id):
     session = Session(engine)
-    offer = session.get(Offer, id)
+    offer = session.get(Offer, offer_id)
     if offer is None:
         session.close()
-        raise HTTPException(status_code=404, detail="Offer not found.")
+        return None
+    data = convert_offer_dict(offer)
+    session.close()
+    return data
 
-    listing = session.get(Listing, offer.listing_id)
-    if listing is None:
+
+# E7 accept or decline offer
+def update_offer_status(offer_id, action):
+    session = Session(engine)
+    offer = session.get(Offer, offer_id)
+    if offer is None:
         session.close()
-        raise HTTPException(status_code=404, detail="Listing not found.")
+        return None
 
-    if listing.seller_roll != seller_roll:
-        session.close()
-        raise HTTPException(status_code=403, detail="You're not allowed to do this.")
-
-    if offer.status != "pending":
-        session.close()
-        raise HTTPException(status_code=400, detail="Offer is not pending.")
-
-    if action_lower in ["accept", "accepted"]:
-        if listing.status != "available":
-            session.close()
-            raise HTTPException(status_code=400, detail="Listing is not available.")
-
+    if action in ["accept", "accepted"]:
         offer.status = "accepted"
-        listing.status = "reserved"
+        listing = session.get(Listing, offer.listing_id)
+        if listing:
+            listing.status = "reserved"
 
         other_offers = session.query(Offer).filter(
-            Offer.listing_id == listing.id,
+            Offer.listing_id == offer.listing_id,
             Offer.id != offer.id,
             Offer.status == "pending"
         ).all()
@@ -266,14 +204,6 @@ def accept_or_decline_offer(id, seller_roll, action):
         offer.status = "declined"
 
     session.commit()
-
-    response = {
-        "id": offer.id,
-        "listing_id": offer.listing_id,
-        "buyer_roll": offer.buyer_roll,
-        "offer_price": offer.offer_price,
-        "status": offer.status,
-        "offered_on": offer.offered_on
-    }
+    data = convert_offer_dict(offer)
     session.close()
-    return response
+    return data
