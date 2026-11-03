@@ -24,6 +24,6 @@ One SQLite file, `textbook.db`, with two tables:
 | E5 | Remove listing | | | Aryan | |
 | E6 | Make an offer | | | Aryan | |
 | E7 | Accept/decline offer | | | Aryan | |
-| E8 | Mark sold | | | Darsh | |
-| E9 | Student's listings | | | Darsh | |
-| E10 | Student's offers | | | Darsh | |
+| E8 | Mark sold | PATCH | /listings/{id}/sold | Darsh | seller_roll |
+| E9 | Student's listings | GET | /students/{roll_no}/listings | Darsh | none |
+| E10 | Student's offers | GET | /students/{roll_no}/offers | Darsh | none |
