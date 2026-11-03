@@ -48,3 +48,33 @@ def change_price(listing_id: int, seller_roll=None, price: int=None):
     if price is None or price < 10 or price > 2000:
         raise HTTPException(status_code=422, detail="Price must be between 10 and 2000")
     return functions.update_price(listing_id=listing_id, new_price=price)
+
+
+
+
+
+# E8 marks a listing sold
+@app.patch("/listings/{listing_id}/sold")
+def mark_listing_sold(listing_id: int, seller_roll=None):
+    listing = functions.get_listing(listing_id=listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if not seller_roll:
+        raise HTTPException(status_code=422, detail="Missing seller roll number")
+    if listing["seller_roll"] != seller_roll:
+        raise HTTPException(status_code=403, detail="Only seller can mark the book sold")
+    if listing["status"] != "reserved":
+        raise HTTPException(status_code=400, detail="Only a reserved book can be marked sold")
+    return functions.mark_sold(listing_id=listing_id)
+
+
+# E9 gets one student's listings with their number of pending offers
+@app.get("/students/{roll_no}/listings")
+def student_listings(roll_no: str):
+    return functions.get_student_listings(roll_no=roll_no)
+
+
+# E10 gets one student's offers with the book's title and asking price
+@app.get("/students/{roll_no}/offers")
+def student_offers(roll_no: str):
+    return functions.get_student_offers(roll_no=roll_no)
