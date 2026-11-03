@@ -1,32 +1,18 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 import functions
 
-app = FastAPI(title="Used Textbook Marketplace API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title = "Used Textbook Marketplace API"
 )
-
-
-@app.get("/")
-def root():
-    return {"message": "Used Textbook Marketplace API", "docs": "/docs"}
-
 
 # E1 gets available listings
 @app.get("/listings")
-def browse_listings(subject=None, condition=None, max_price: int = None):
+def browse_listings(subject=None, condition=None, max_price: int=None):
     if subject is not None and subject not in functions.subjects:
         raise HTTPException(status_code=422, detail="Invalid subject")
     if condition is not None and condition not in functions.conditions:
         raise HTTPException(status_code=422, detail="Invalid condition")
     return functions.get_listings(subject=subject, condition=condition, max_price=max_price)
-
 
 # E2 gets one listing with its offers
 @app.get("/listings/{listing_id}")
@@ -36,10 +22,9 @@ def view_listing(listing_id: int):
         raise HTTPException(status_code=404, detail="Listing not found")
     return listing
 
-
 # E3 lists a book
 @app.post("/listings")
-def create_listing(seller_roll=None, title=None, subject=None, condition=None, price: int = None):
+def create_listing(seller_roll=None, title=None, subject=None, condition=None, price: int=None):
     if not seller_roll or not title or not subject or not condition or price is None:
         raise HTTPException(status_code=422, detail="Missing feild")
     if subject not in functions.subjects:
@@ -50,10 +35,9 @@ def create_listing(seller_roll=None, title=None, subject=None, condition=None, p
         raise HTTPException(status_code=422, detail="Price must be between 10 and 2000")
     return functions.add_listing(seller_roll=seller_roll, title=title, subject=subject, condition=condition, price=price)
 
-
 # E4 changes a listing's price
 @app.patch("/listings/{listing_id}/price")
-def change_price(listing_id: int, seller_roll=None, price: int = None):
+def change_price(listing_id: int, seller_roll=None, price: int=None):
     listing = functions.get_listing(listing_id=listing_id)
     if listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
@@ -64,6 +48,7 @@ def change_price(listing_id: int, seller_roll=None, price: int = None):
     if price is None or price < 10 or price > 2000:
         raise HTTPException(status_code=422, detail="Price must be between 10 and 2000")
     return functions.update_price(listing_id=listing_id, new_price=price)
+
 
 
 # E5 removes a listing
@@ -131,3 +116,30 @@ def decide_offer(offer_id: int, seller_roll: str = None, action: str = None, sta
         raise HTTPException(status_code=400, detail="Listing is not available")
 
     return functions.update_offer_status(offer_id=offer_id, action=act_lower)
+
+
+# E8 marks a listing sold
+@app.patch("/listings/{listing_id}/sold")
+def mark_listing_sold(listing_id: int, seller_roll=None):
+    listing = functions.get_listing(listing_id=listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if not seller_roll:
+        raise HTTPException(status_code=422, detail="Missing seller roll number")
+    if listing["seller_roll"] != seller_roll:
+        raise HTTPException(status_code=403, detail="Only seller can mark the book sold")
+    if listing["status"] != "reserved":
+        raise HTTPException(status_code=400, detail="Only a reserved book can be marked sold")
+    return functions.mark_sold(listing_id=listing_id)
+
+
+# E9 gets one student's listings with their number of pending offers
+@app.get("/students/{roll_no}/listings")
+def student_listings(roll_no: str):
+    return functions.get_student_listings(roll_no=roll_no)
+
+
+# E10 gets one student's offers with the book's title and asking price
+@app.get("/students/{roll_no}/offers")
+def student_offers(roll_no: str):
+    return functions.get_student_offers(roll_no=roll_no)
