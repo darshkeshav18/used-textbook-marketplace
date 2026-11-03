@@ -116,3 +116,64 @@ def update_price(listing_id, new_price):
     data = convert_dict(listing)
     session.close()
     return data
+
+
+
+
+
+
+
+
+
+# E8 mark a listing sold
+def mark_sold(listing_id):
+    session = Session(engine)
+    listing = session.get(Listing, listing_id)
+    if listing is None:
+        session.close()
+        return None
+    listing.status = "sold"
+    session.commit()
+    data = convert_dict(listing)
+    session.close()
+    return data
+
+
+# E9 get one student's listings, each with its number of pending offers
+def get_student_listings(roll_no):
+    session = Session(engine)
+    result = []
+    for listing in session.query(Listing):
+        if listing.seller_roll == roll_no:
+            data = convert_dict(listing)
+
+            pending = 0
+            for offer in session.query(Offer):
+                if offer.listing_id == listing.id and offer.status == "pending":
+                    pending = pending + 1
+            data["pending_offers"] = pending
+
+            result.append(data)
+    session.close()
+    return result
+
+
+# E10 get one student's offers, each with the book's title and asking price
+def get_student_offers(roll_no):
+    session = Session(engine)
+    result = []
+    for offer in session.query(Offer):
+        if offer.buyer_roll == roll_no:
+            listing = session.get(Listing, offer.listing_id)
+            if listing is not None:
+                result.append({
+                    "id": offer.id,
+                    "listing_id": offer.listing_id,
+                    "title": listing.title,
+                    "asking_price": listing.price,
+                    "offer_price": offer.offer_price,
+                    "status": offer.status,
+                    "offered_on": offer.offered_on,
+                })
+    session.close()
+    return result
