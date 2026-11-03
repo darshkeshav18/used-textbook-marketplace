@@ -1,9 +1,22 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import functions
 
 app = FastAPI(
     title = "Used Textbook Marketplace API"
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def root():
+    return {"message": "Used Textbook Marketplace API", "docs": "/docs"}
 
 # E1 gets available listings
 @app.get("/listings")
@@ -48,7 +61,6 @@ def change_price(listing_id: int, seller_roll=None, price: int=None):
     if price is None or price < 10 or price > 2000:
         raise HTTPException(status_code=422, detail="Price must be between 10 and 2000")
     return functions.update_price(listing_id=listing_id, new_price=price)
-
 
 
 # E5 removes a listing
