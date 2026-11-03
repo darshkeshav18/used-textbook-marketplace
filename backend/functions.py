@@ -119,9 +119,88 @@ def update_price(listing_id, new_price):
 
 
 
+# E5 remove a listing
+def delete_listing(listing_id):
+    session = Session(engine)
+    listing = session.get(Listing, listing_id)
+    if listing is not None:
+        for offer in session.query(Offer).filter(Offer.listing_id == listing_id).all():
+            session.delete(offer)
+        session.delete(listing)
+        session.commit()
+    session.close()
+    return {"message": "Listing removed successfully"}
 
 
+# E6 helper: check if buyer already has a pending offer on this listing
+def has_pending_offer(listing_id, buyer_roll):
+    session = Session(engine)
+    existing = session.query(Offer).filter(
+        Offer.listing_id == listing_id,
+        Offer.buyer_roll == buyer_roll,
+        Offer.status == "pending"
+    ).first()
+    session.close()
+    return existing is not None
 
+
+# E6 make an offer
+def add_offer(listing_id, buyer_roll, offer_price):
+    session = Session(engine)
+    offer = Offer(
+        listing_id=listing_id,
+        buyer_roll=buyer_roll,
+        offer_price=offer_price,
+        status="pending",
+        offered_on=datetime.now()
+    )
+    session.add(offer)
+    session.commit()
+    data = convert_offer_dict(offer)
+    session.close()
+    return data
+
+
+# E7 helper: get one offer by id
+def get_offer(offer_id):
+    session = Session(engine)
+    offer = session.get(Offer, offer_id)
+    if offer is None:
+        session.close()
+        return None
+    data = convert_offer_dict(offer)
+    session.close()
+    return data
+
+
+# E7 accept or decline offer
+def update_offer_status(offer_id, action):
+    session = Session(engine)
+    offer = session.get(Offer, offer_id)
+    if offer is None:
+        session.close()
+        return None
+
+    if action in ["accept", "accepted"]:
+        offer.status = "accepted"
+        listing = session.get(Listing, offer.listing_id)
+        if listing:
+            listing.status = "reserved"
+
+        other_offers = session.query(Offer).filter(
+            Offer.listing_id == offer.listing_id,
+            Offer.id != offer.id,
+            Offer.status == "pending"
+        ).all()
+        for other in other_offers:
+            other.status = "declined"
+    else:
+        offer.status = "declined"
+
+    session.commit()
+    data = convert_offer_dict(offer)
+    session.close()
+    return data
 
 
 
