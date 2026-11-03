@@ -28,3 +28,32 @@ One SQLite file, `textbook.db`, with two tables:
 | E9 | Student's listings | GET | /students/{roll_no}/listings | none | 200 | 404 (student roll number not found) | Darsh |
 | E10 | Student's offers | GET | /students/{roll_no}/offers | none | 200 | 404 (student roll number not found) | Darsh |
 
+## How to Run
+
+### Backend
+1. Open a terminal and navigate to the backend folder:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   pip install fastapi uvicorn sqlalchemy
+   ```
+3. Run the FastAPI server on port 8001:
+   ```bash
+   python -m uvicorn main:app --reload --port 8001
+   ```
+4. Access the API and interactive documentation:
+   - Interactive Swagger UI: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
+   - Alternative ReDoc: [http://127.0.0.1:8001/redoc](http://127.0.0.1:8001/redoc)
+
+### Frontend
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies and start the React dev server:
+   ```bash
+   npm install
+   npm run dev
+   ```
