@@ -45,6 +45,15 @@ def convert_dict(listing):
         "status": listing.status,
     }
 
+def convert_offer_dict(offer):
+    return {
+        "id": offer.id,
+        "listing_id": offer.listing_id,
+        "buyer_roll": offer.buyer_roll,
+        "offer_price": offer.offer_price,
+        "status": offer.status,
+        "offered_on": offer.offered_on,
+    }
 
 # E1 gets available listings
 def get_listings(subject=None, condition=None, max_price=None):
