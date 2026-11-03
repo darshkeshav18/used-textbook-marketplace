@@ -95,6 +95,7 @@ def add_listing(seller_roll, title, subject, condition, price):
         subject=subject,
         condition=condition,
         price=price,
+        status="available"
     )
     session.add(listing)
     session.commit()
