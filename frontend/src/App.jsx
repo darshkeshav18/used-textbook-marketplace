@@ -1,78 +1,49 @@
-import {useState, useEffect} from "react";
-
+import { useState, useEffect } from "react";
+import BrowseListings from "./components/BrowseListings";
+import MyBooks from "./components/MyBooks";
+import SellBooks from "./components/SellBooks";
 
 const API_URL = "http://127.0.0.1:8001";
 
 function App() {
   const [listings, setListings] = useState([]);
-  const [listing, setListing] = useState(null);
-  const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
 
-// sam's code goes here
-
-// E1 function that gets all listings along with the url filters 
-  function getListings(subject, condition, maxPrice) {
-    setMessage("");
-    const subjectFilter = subject?"subject=" + subject + "&" :"";
-    const conditinFilter = condition?"condition=" + condition + "&" :"";
-    const priceFilter = maxPrice?"max_price=" + maxPrice :"";
-
-    fetch(API_URL + "/listings?" + subjectFilter + conditinFilter + priceFilter)
+  function fetchListings() {
+    fetch(`${API_URL}/listings`)
       .then((response) => response.json())
-      .then((data) => data.detail?setMessage(data.detail) : setListings(data));
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setListings(data);
+        }
+      });
   }
 
-  // E1 shows all listins when page loads
   useEffect(() => {
-    getListings();
+    fetchListings();
   }, []);
 
-  // E2 takes listing id and gets specific listing
-  function getListing(id) {
-    setMessage("");
-    fetch(API_URL + "/listings/" + id)
-      .then((response) => response.json())
-      .then((data) => data.detail ? setMessage(data.detail) : setListing(data)); // outputs error message if data.detail is false
-  }
+  return (
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", fontFamily: "sans-serif" }}>
+      <h1>Used Textbook Marketplace</h1>
 
-  // E3 adds a book to listing
-  function addListing(sellerRoll, title, subject, condition, price) {
-    setMessage("");
-    fetch(API_URL + "/listings?seller_roll=" + sellerRoll + "&title=" + title + "&subject=" + subject + "&condition=" + condition + "&price=" + price, 
-      { 
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({seller_roll: sellerRoll, title: title, subject: subject, condition: condition, price: price}),
-      })
-      .then((response) => response.json())
-      .then((data) => setMessage(data.detail ? data.detail : ""))
-      .then(() => getListings()); // reload list so the new book shows up
-  }
+      {/* Part 3: Sell a Book (Samhita's E3) */}
+      <SellBooks apiUrl={API_URL} onListingAdded={fetchListings} />
 
-  // E4 changes the price of a book on lisiting
-  function changePrice(id, sellerRoll, price) {
-    setMessage("");
-    fetch(API_URL + "/listings/" + id + "/price?seller_roll=" + sellerRoll + "&price=" + price, 
-      {
-      method: "PATCH",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({seller_roll: sellerRoll, price: price}),
-      })
-      .then((response) => response.json())
-      .then((data) => data.detail ? setMessage(data.detail) : getListing(id))
-      .then(() => getListings()); // reload so the new price shows on the cards
-  }}
+      <hr style={{ margin: "30px 0" }} />
 
-// aryan's code goes here 
+      {/* Part 1: Browse Available Listings (Includes Aryan's E6 Make Offer on each card) */}
+      <BrowseListings
+        listings={listings}
+        apiUrl={API_URL}
+        onOfferSuccess={fetchListings}
+      />
 
+      <hr style={{ margin: "30px 0" }} />
 
-
-// darsh's code goes here
-
- return (
-    <>
-      // hi guys make it pretty here
-    </>
+      {/* Part 2: My Books (Includes Aryan's E5 Remove and E7 Accept/Decline) */}
+      <MyBooks apiUrl={API_URL} onActionDone={fetchListings} />
+    </div>
   );
+}
 
 export default App;
