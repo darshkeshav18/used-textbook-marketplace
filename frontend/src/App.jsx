@@ -1,11 +1,11 @@
 import {useState, useEffect} from "react";
-
+import SellBook from "./components/SellBooks";
 
 const API_URL = "http://127.0.0.1:8001";
 
 function App() {
   const [listings, setListings] = useState([]);
-  const [listing, setListing] = useState(null);
+  const [listing, setListing] = useState([]);
   const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
 
 // sam's code goes here
@@ -32,7 +32,7 @@ function App() {
     setMessage("");
     fetch(API_URL + "/listings/" + id)
       .then((response) => response.json())
-      .then((data) => data.detail ? setMessage(data.detail) : setListing(data)); // outputs error message if data.detail is false
+      .then((data) => data.detail ? setMessage(data.detail) : setListing([data])); // outputs error message if data.detail is false
   }
 
   // E3 adds a book to listing
@@ -60,19 +60,22 @@ function App() {
       })
       .then((response) => response.json())
       .then((data) => data.detail ? setMessage(data.detail) : getListing(id))
-      .then(() => getListings()); // reload so the new price shows on the cards
-  }}
+       .then(() => getListings()); // reload so the new price shows on the cards
+  }
 
-// aryan's code goes here 
+  // aryan's code goes here
 
 
 
-// darsh's code goes here
+  // darsh's code goes here
 
- return (
+  return (
     <>
-      // hi guys make it pretty here
+      <h1>Used Textbook Marketplace</h1>
+      <p>{message}</p>
+      <SellBook addListing={addListing} />
     </>
   );
+}
 
 export default App;
