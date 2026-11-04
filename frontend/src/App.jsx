@@ -1,25 +1,27 @@
-import {useState, useEffect} from "react";
-
+import { useState, useEffect } from "react";
+import BrowseListings from "./components/BrowseListings";
 
 const API_URL = "http://127.0.0.1:8001";
 
 function App() {
   const [listings, setListings] = useState([]);
   const [listing, setListing] = useState(null);
+  const [myListings, setMyListings] = useState([]);
+  const [myOffers, setMyOffers] = useState([]);
   const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
 
-// sam's code goes here
+  // sam's code goes here
 
-// E1 function that gets all listings along with the url filters 
+  // E1 function that gets all listings along with the url filters 
   function getListings(subject, condition, maxPrice) {
     setMessage("");
-    const subjectFilter = subject?"subject=" + subject + "&" :"";
-    const conditinFilter = condition?"condition=" + condition + "&" :"";
-    const priceFilter = maxPrice?"max_price=" + maxPrice :"";
+    const subjectFilter = subject ? "subject=" + subject + "&" : "";
+    const conditinFilter = condition ? "condition=" + condition + "&" : "";
+    const priceFilter = maxPrice ? "max_price=" + maxPrice : "";
 
     fetch(API_URL + "/listings?" + subjectFilter + conditinFilter + priceFilter)
       .then((response) => response.json())
-      .then((data) => data.detail?setMessage(data.detail) : setListings(data));
+      .then((data) => data.detail ? setMessage(data.detail) : setListings(data));
   }
 
   // E1 shows all listins when page loads
@@ -61,21 +63,91 @@ function App() {
       .then((response) => response.json())
       .then((data) => data.detail ? setMessage(data.detail) : getListing(id))
       .then(() => getListings()); // reload so the new price shows on the cards
-  }}
+  }
 
-// aryan's code goes here 
+  // aryan's code goes here 
 
+  // E5 removes a listing
+  function removeListing(id, sellerRoll) {
+    setMessage("");
+    fetch(API_URL + "/listings/" + id + "?seller_roll=" + sellerRoll, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => (data.detail ? setMessage(data.detail) : setMessage("Listing removed!")))
+      .then(() => getListings()); // reload so the removed book is gone
+  }
 
+  // E6 makes an offer on a listing
+  function makeOffer(listingId, buyerRoll, offerPrice) {
+    setMessage("");
+    fetch(API_URL + "/offers?listing_id=" + listingId + "&buyer_roll=" + buyerRoll + "&offer_price=" + offerPrice, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => (data.detail ? setMessage(data.detail) : setMessage("Offer placed successfully!")))
+      .then(() => getListing(listingId)); // reload the listing's offers
+  }
+
+  // E7 accepts or declines an offer
+  function decideOffer(offerId, sellerRoll, action, listingId) {
+    setMessage("");
+    fetch(API_URL + "/offers/" + offerId + "?seller_roll=" + sellerRoll + "&action=" + action, {
+      method: "PATCH",
+    })
+      .then((response) => response.json())
+      .then((data) => (data.detail ? setMessage(data.detail) : setMessage("Offer " + action + "ed!")))
+      .then(() => {
+        getListings();
+        if (listingId) getListing(listingId);
+      });
+  }
 
 // darsh's code goes here
 
+// E9 gets one student's listings, each with its number of pending offers
+function getMyListings(rollNo) {
+    fetch(API_URL + "/students/" + rollNo + "/listings")
+      .then((response) => response.json())
+      .then((data) => setMyListings(data));
+  }
+
+// E10 gets one student's offers, each with the book's title and asking price
+function getMyOffers(rollNo) {
+    fetch(API_URL + "/students/" + rollNo + "/offers")
+      .then((response) => response.json())
+      .then((data) => setMyOffers(data));
+  }
+
+// E9 + E10 used by the Show button in My books
+function showMyBooks(rollNo) {
+    if (rollNo === "") {
+      setMessage("Enter a roll number");
+    } else {
+      setMessage("");
+      getMyListings(rollNo);
+      getMyOffers(rollNo);
+    }
+  }
+
+// E8 marks a listing sold
+function markSold(listingId, sellerRoll) {
+    setMessage("");
+    fetch(API_URL + "/listings/" + listingId + "/sold?seller_roll=" + sellerRoll, { method: "PATCH" })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.detail) {
+          setMessage(data.detail);
+        } else {
+          getMyListings(sellerRoll);
+          getListings();
+        }
+      });
+  }
+
+  return 
 
 
-
- return (
-    <>
-      // hi guys make it pretty here
-    </>
-  );
+}
 
 export default App;

@@ -84,7 +84,7 @@ def make_offer(listing_id: int = None, buyer_roll: str = None, offer_price: int 
     return functions.add_offer(listing_id=listing_id, buyer_roll=buyer_roll, offer_price=offer_price)
 
 
-# E7 accepts or declines an offer
+# E7 will ddo accepts or declines an offer
 @app.patch("/offers/{offer_id}")
 def decide_offer(offer_id: int, seller_roll: str = None, action: str = None, status: str = None):
     act = action if action is not None else status
