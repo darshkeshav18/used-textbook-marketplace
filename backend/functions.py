@@ -45,7 +45,7 @@ def convert_dict(listing):
         "status": listing.status,
     }
 
-def convert_offer_dict(offer):
+def convert_offer_dict(offer): 
     return {
         "id": offer.id,
         "listing_id": offer.listing_id,
@@ -156,7 +156,7 @@ def delete_listing(listing_id):
     return {"message": "Listing removed successfully"}
 
 
-# E6 helper: check if buyer already has a pending offer on this listing
+# E6 helper funct to check if buyer already has a pending offer on this listing
 def has_pending_offer(listing_id, buyer_roll):
     session = Session(engine)
     existing = session.query(Offer).filter(
@@ -185,7 +185,7 @@ def add_offer(listing_id, buyer_roll, offer_price):
     return data
 
 
-# E7 helper: get one offer by id
+# E7 just a helper funct wrote to assiste verification
 def get_offer(offer_id):
     session = Session(engine)
     offer = session.get(Offer, offer_id)
