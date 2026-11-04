@@ -1,22 +1,9 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 import functions
 
 app = FastAPI(
     title = "Used Textbook Marketplace API"
 )
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.get("/")
-def root():
-    return {"message": "Used Textbook Marketplace API", "docs": "/docs"}
 
 # E1 gets available listings
 @app.get("/listings")
