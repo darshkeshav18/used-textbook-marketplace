@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import BrowseListings from "./components/BrowseListings";
 import SellBook from "./components/SellBooks";
 import MyBooks from "./components/MyBooks";
@@ -12,6 +12,7 @@ function App() {
   const [myOffers, setMyOffers] = useState([]);
   const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
 
+  // sam's code goes here
 
   // E1 function that gets all listings along with the url filters 
   function getListings(subject, condition, maxPrice) {
@@ -67,6 +68,7 @@ function App() {
       .then(() => getMyListings(sellerRoll)); // reload the student's list in My books
   }
 
+  // aryan's code goes here
 
   // E5 removes a listing
   function removeListing(id, sellerRoll) {
@@ -107,22 +109,24 @@ function App() {
       });
   }
 
-// E9 gets one student's listings, each with its number of pending offers
-function getMyListings(rollNo) {
+  // darsh's code goes here
+
+  // E9 gets one student's listings, each with its number of pending offers
+  function getMyListings(rollNo) {
     fetch(API_URL + "/students/" + rollNo + "/listings")
       .then((response) => response.json())
       .then((data) => data.detail ? setMessage(data.detail) : setMyListings(data));
   }
 
-// E10 gets one student's offers, each with the book's title and asking price
-function getMyOffers(rollNo) {
+  // E10 gets one student's offers, each with the book's title and asking price
+  function getMyOffers(rollNo) {
     fetch(API_URL + "/students/" + rollNo + "/offers")
       .then((response) => response.json())
       .then((data) => data.detail ? setMessage(data.detail) : setMyOffers(data));
   }
 
-// E9 + E10 used by the Show button in My books
-function showMyBooks(rollNo) {
+  // E9 + E10 used by the Show button in My books
+  function showMyBooks(rollNo) {
     if (rollNo === "") {
       setMessage("Enter a roll number");
     } else {
@@ -132,8 +136,8 @@ function showMyBooks(rollNo) {
     }
   }
 
-// E8 marks a listing sold
-function markSold(listingId, sellerRoll) {
+  // E8 marks a listing sold
+  function markSold(listingId, sellerRoll) {
     setMessage("");
     fetch(API_URL + "/listings/" + listingId + "/sold?seller_roll=" + sellerRoll, { method: "PATCH" })
       .then((response) => response.json())
@@ -149,53 +153,23 @@ function markSold(listingId, sellerRoll) {
   }
 
   return (
-    <div className="container">
-      <header className="app-header">
-        <h1>Used Textbook Marketplace</h1>
-        <p className="subtitle">Campus Textbook Exchange</p>
-      </header>
-
-      {message && (
-        <div
-          className={
-            "message-banner " +
-            (message.toLowerCase().includes("fail") ||
-            message.toLowerCase().includes("not") ||
-            message.toLowerCase().includes("invalid") ||
-            message.toLowerCase().includes("must") ||
-            message.toLowerCase().includes("error") ||
-            message.toLowerCase().includes("required") ||
-            message.toLowerCase().includes("enter")
-              ? "error"
-              : "success")
-          }
-        >
-          {message}
-        </div>
-      )}
-
-      <div className="section-card">
-        <BrowseListings listings={listings} getListings={getListings} makeOffer={makeOffer} />
-      </div>
-
-      <div className="section-card">
-        <SellBook addListing={addListing} />
-      </div>
-
-      <div className="section-card">
-        <MyBooks
-          myListings={myListings}
-          myOffers={myOffers}
-          listing={listing}
-          showMyBooks={showMyBooks}
-          getListing={getListing}
-          changePrice={changePrice}
-          removeListing={removeListing}
-          decideOffer={decideOffer}
-          markSold={markSold}
-        />
-      </div>
-    </div>
+    <>
+      <h1>Used Textbook Marketplace</h1>
+      {message && <p className="message">{message}</p>}
+      <BrowseListings listings={listings} getListings={getListings} makeOffer={makeOffer} />
+      <SellBook addListing={addListing} />
+      <MyBooks
+        myListings={myListings}
+        myOffers={myOffers}
+        listing={listing}
+        showMyBooks={showMyBooks}
+        getListing={getListing}
+        changePrice={changePrice}
+        removeListing={removeListing}
+        decideOffer={decideOffer}
+        markSold={markSold}
+      />
+    </>
   );
 }
 
