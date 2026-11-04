@@ -145,7 +145,9 @@ function markSold(listingId, sellerRoll) {
       });
   }
 
-  return 
+  return (
+  <BrowseListings listings={listings} getListings={getListings} makeOffer={makeOffer} />
+);
 
 
 }
