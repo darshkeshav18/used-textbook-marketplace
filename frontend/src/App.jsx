@@ -10,7 +10,6 @@ function App() {
   const [myOffers, setMyOffers] = useState([]);
   const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
 
-  // sam's code goes here
 
   // E1 function that gets all listings along with the url filters 
   function getListings(subject, condition, maxPrice) {
@@ -65,7 +64,7 @@ function App() {
       .then(() => getListings()); // reload so the new price shows on the cards
   }
 
-  // aryan's code goes here 
+
 
   // E5 removes a listing
   function removeListing(id, sellerRoll) {
@@ -103,7 +102,7 @@ function App() {
       });
   }
 
-// darsh's code goes here
+
 
 // E9 gets one student's listings, each with its number of pending offers
 function getMyListings(rollNo) {
