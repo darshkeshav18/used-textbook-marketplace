@@ -1,90 +1,268 @@
-* { box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
 
 body {
   margin: 0;
-  padding: 24px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f4f5f7;
-  color: #1f2328;
+  padding: 30px 16px;
+  font-family: 'VT323', 'Courier New', monospace;
+  font-size: 20px;
+  background-color: #12131c;
+  background-image: 
+    linear-gradient(rgba(18, 19, 28, 0.95), rgba(18, 19, 28, 0.95)),
+    radial-gradient(#3a3f58 15%, transparent 16%),
+    radial-gradient(#25293d 15%, transparent 16%);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+  background-position: 0 0, 0 0, 12px 12px;
+  color: #e2e8f0;
+  letter-spacing: 0.5px;
 }
 
-h1 { margin: 0 0 20px; }
-
-/* The grid of cards from products-starter */
-.products {
-  list-style: none;
-  margin: 16px 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
+/* Container */
+#root {
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-/* One card from products-starter */
-.product {
-  background: #ffffff;
-  border: 1px solid #dde1e6;
-  border-radius: 12px;
+/* Title / Main Banner */
+h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  text-align: center;
+  color: #fce762;
+  text-shadow: 
+    3px 3px 0px #000,
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+  margin: 0 0 24px 0;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.product:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.product h2 {
-  font-size: 1.05rem;
-  margin: 0;
-}
-
-.product p { margin: 0; }
-
-.product p:first-of-type {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #0f7a5c;
-}
-
-.product h3 {
-  font-size: 0.8rem;
+  background: #1e2030;
+  border: 4px solid #fce762;
+  box-shadow: 
+    0 0 0 4px #000,
+    6px 6px 0 4px #000;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
-  margin: 10px 0 0;
-  padding-top: 10px;
-  border-top: 1px solid #eef0f2;
 }
 
+/* Section Headings */
+h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #4ef2bb;
+  text-shadow: 2px 2px 0px #000;
+  margin: 28px 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 4px dashed #3a3f58;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2::before {
+  content: "▶";
+  font-size: 11px;
+  color: #fce762;
+}
+
+h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: #a78bfa;
+  margin: 14px 0 8px 0;
+  line-height: 1.4;
+}
+
+h4 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #67e8f9;
+  margin: 12px 0 6px 0;
+}
+
+/* Message / Alert Bubble */
+.message {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  background: #2b1625;
+  color: #ff6b81;
+  border: 3px solid #ff4757;
+  box-shadow: 
+    0 0 0 3px #000,
+    4px 4px 0 3px #000;
+  padding: 14px 16px;
+  margin: 16px 0 24px;
+}
+
+/* Forms: Inputs & Selects */
 input, select {
-  padding: 8px;
-  margin: 4px;
-  border: 1px solid #dde1e6;
-  border-radius: 6px;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  background: #181926;
+  color: #f8fafc;
+  border: 3px solid #3a3f58;
+  box-shadow: 
+    inset 2px 2px 0 #000,
+    inset -1px -1px 0 #5b6282;
+  padding: 6px 12px;
+  margin: 4px 6px 6px 0;
+  outline: none;
+  transition: border-color 0.1s;
 }
 
+input:focus, select:focus {
+  border-color: #fce762;
+  background: #202235;
+}
+
+input::placeholder {
+  color: #64748b;
+}
+
+/* 2D Pixel Clicky Buttons */
 button {
-  padding: 8px 12px;
-  margin: 4px;
-  background: #0f7a5c;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  background: #38b764;
+  color: #ffffff;
+  border: 3px solid #000;
+  box-shadow: 
+    inset -2px -2px 0px 0px #1e6f3d,
+    inset 2px 2px 0px 0px #6ee7b7,
+    3px 3px 0px 0px #000;
+  padding: 9px 12px;
+  margin: 4px 6px 6px 0;
   cursor: pointer;
+  text-transform: uppercase;
+  user-select: none;
+  transition: transform 0.05s, box-shadow 0.05s;
 }
 
 button:hover {
-  background: #0b5c45;
+  background: #4ade80;
+  box-shadow: 
+    inset -2px -2px 0px 0px #1e6f3d,
+    inset 2px 2px 0px 0px #a7f3d0,
+    3px 3px 0px 0px #000;
 }
 
-.message {
-  color: red;
-  font-weight: bold;
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 
+    inset -1px -1px 0px 0px #1e6f3d,
+    inset 1px 1px 0px 0px #6ee7b7,
+    1px 1px 0px 0px #000;
+}
+
+/* The Grid of Product Cards */
+.products {
+  list-style: none;
+  margin: 18px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* 2D Pixel Item Card */
+.product {
+  background: #1c1d2d;
+  border: 4px solid #2e324c;
+  box-shadow: 
+    0 0 0 3px #000,
+    5px 5px 0 3px #000;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.product:hover {
+  transform: translate(-2px, -2px);
+  border-color: #4ef2bb;
+  box-shadow: 
+    0 0 0 3px #000,
+    7px 7px 0 3px #000;
+}
+
+.product h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  border: none;
+  line-height: 1.4;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.product h2::before {
+  content: none;
+}
+
+.product p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 19px;
+}
+
+/* Coin Price */
+.product p:first-of-type {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #fce762;
+  text-shadow: 2px 2px 0 #000;
+  margin: 4px 0;
+}
+
+.product p:first-of-type::before {
+  content: "🪙 ";
+  font-size: 12px;
+}
+
+.product h3 {
+  font-size: 10px;
+  color: #38bdf8;
+  margin: 10px 0 4px;
+  padding-top: 8px;
+  border-top: 2px dashed #3a3f58;
+}
+
+/* Pixel Divider */
+hr {
+  border: none;
+  border-top: 3px dashed #3a3f58;
+  margin: 16px 0;
+}
+
+/* Status Cards in MyBooks */
+.pending {
+  background: #23221b;
+  border-left: 6px solid #facc15;
+  padding: 8px 12px;
+  margin: 6px 0;
+}
+
+.accepted {
+  background: #142820;
+  border-left: 6px solid #4ade80;
+  padding: 8px 12px;
+  margin: 6px 0;
+}
+
+.declined {
+  background: #2a1619;
+  border-left: 6px solid #f87171;
+  padding: 8px 12px;
+  margin: 6px 0;
 }
 
 .accepted button,
