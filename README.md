@@ -13,28 +13,28 @@ One SQLite file, `textbook.db`, with two tables:
 - **listings:** id, seller_roll, title, subject, condition, price, listed_on, status
 - **offers:** id, listing_id, buyer_roll, offer_price, status, offered_on
 
-## API Endpoints
+## API Endpoints Contribution
 
 | # | What it does | Method | Path | Request body | Success code | Error codes | Who |
-|---|--------------|--------|------|--------------|--------------|-------------|-----|
+|:-:|:-------------|:------:|:-----|:-------------|:------------:|:------------|:---:|
 | E1 | Browse available listings | GET | /listings?subject=&condition=&max_price= | none | 200 | 422 | Samhita |
 | E2 | View one listing | GET | /listings/{listing_id} | none | 200 | 404 | Samhita |
-| E3 | List a book | POST | /listings | seller_roll, title, subject, condition, price | 201 | 422 | Samhita |
-| E4 | Change price | PATCH | /listings/{listing_id}/price | seller_roll, price | 200 | 403 (roll number is not seller's), 404 (unavailable values), 422 (if price is not within range) | Samhita |
-<<<<<<< HEAD
-| E5 | Remove listing | | | | | | Aryan |
-| E6 | Make an offer | | | | | | Aryan |
-| E7 | Accept/decline offer | | | | | | Aryan |
-| E8 | Mark sold | | | | | | Darsh |
-| E9 | Student's listings | | | | | | Darsh |
-| E10 | Student's offers | | | | | | Darsh |
-=======
-| E5 | Remove listing | DELETE | /listings/{listing_id} | seller_roll | 200 | 400 (listing is not available), 403 (roll number is not seller's), 404 (listing id doesn't exist), 422 (missing or empty roll number) | Aryan |
-| E6 | Make an offer | POST | /offers | listing_id, buyer_roll, offer_price | 200 | 400 (offer on own listing, listing not available, second pending offer from same buyer), 404 (listing id doesn't exist), 422 (missing fields, offer price not between 1 and asking price) | Aryan |
-| E7 | Accept/decline offer | PATCH | /offers/{offer_id} | seller_roll, action | 200 | 400 (offer is not pending, or listing not available), 403 (roll number is not seller's), 404 (offer id doesn't exist), 422 (missing fields, invalid action) | Aryan |
-| E8 | Mark sold | PATCH | /listings/{listing_id}/sold | seller_roll | 200 | 400 (listing is not reserved), 403 (roll number is not seller’s), 404 (listing id doesn’t exist), 422 (missing or empty roll number) | Darsh |
+| E3 | List a book | POST | /listings | seller_roll<br>title<br>subject<br>condition<br>price | 200 | 422 | Samhita |
+| E4 | Change price | PATCH | /listings/{listing_id}/price | seller_roll<br>price | 200 | 400 (listing is not available)<br>403 (roll number is not seller's)<br>404 (listing id doesn't exist)<br>422 (price is not within range) | Samhita |
+| E5 | Remove listing | DELETE | /listings/{listing_id} | seller_roll | 200 | 400 (listing is not available)<br>403 (roll number is not seller's)<br>404 (listing id doesn't exist)<br>422 (missing or empty roll number) | Aryan |
+| E6 | Make an offer | POST | /offers | listing_id<br>buyer_roll<br>offer_price | 200 | 400 (offer on own listing, listing not available, second pending offer from same buyer)<br>404 (listing id doesn't exist)<br>422 (missing fields, offer price not between 1 and asking price) | Aryan |
+| E7 | Accept/decline offer | PATCH | /offers/{offer_id} | seller_roll<br>action | 200 | 400 (offer is not pending, or listing not available)<br>403 (roll number is not seller's)<br>404 (offer id doesn't exist)<br>422 (missing fields, invalid action) | Aryan |
+| E8 | Mark sold | PATCH | /listings/{listing_id}/sold | seller_roll | 200 | 400 (listing is not reserved)<br>403 (roll number is not seller's)<br>404 (listing id doesn't exist)<br>422 (missing or empty roll number) | Darsh |
 | E9 | Student's listings | GET | /students/{roll_no}/listings | none | 200 | 404 (student roll number not found) | Darsh |
 | E10 | Student's offers | GET | /students/{roll_no}/offers | none | 200 | 404 (student roll number not found) | Darsh |
+
+## Frontend Contribution
+
+| Member | Files | Endpoints | What they did |
+|:---------:|:---------|:------------:|:-----------------|
+| Samhita | App.jsx <br>SellBook.jsx<br>MyBooks.jsx | E1, E2, E3, E4 | Wrote the fetch functions for E1 to E4 in App.jsx <br>Built the Sell a book form (E3)<br>Built the My books dashboard |
+| Aryan | | | |
+| Darsh | | | |
 
 ## How to Run
 
@@ -64,9 +64,4 @@ One SQLite file, `textbook.db`, with two tables:
    ```bash
    npm install
    npm run dev
-<<<<<<< HEAD
    ```
-=======
-   ```
->>>>>>> 2eed362af47e099800ffaa9d5c445a5b13bef759
->>>>>>> 06898b9783eed45384d05578a500ab7f0eaf4d09
