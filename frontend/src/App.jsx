@@ -149,23 +149,53 @@ function markSold(listingId, sellerRoll) {
   }
 
   return (
-    <>
-      <h1>Used Textbook Marketplace</h1>
-      <p>{message}</p>
-      <BrowseListings listings={listings} getListings={getListings} makeOffer={makeOffer} />
-      <SellBook addListing={addListing} />
-      <MyBooks
-        myListings={myListings}
-        myOffers={myOffers}
-        listing={listing}
-        showMyBooks={showMyBooks}
-        getListing={getListing}
-        changePrice={changePrice}
-        removeListing={removeListing}
-        decideOffer={decideOffer}
-        markSold={markSold}
-      />
-    </>
+    <div className="container">
+      <header className="app-header">
+        <h1>Used Textbook Marketplace</h1>
+        <p className="subtitle">Campus Textbook Exchange</p>
+      </header>
+
+      {message && (
+        <div
+          className={
+            "message-banner " +
+            (message.toLowerCase().includes("fail") ||
+            message.toLowerCase().includes("not") ||
+            message.toLowerCase().includes("invalid") ||
+            message.toLowerCase().includes("must") ||
+            message.toLowerCase().includes("error") ||
+            message.toLowerCase().includes("required") ||
+            message.toLowerCase().includes("enter")
+              ? "error"
+              : "success")
+          }
+        >
+          {message}
+        </div>
+      )}
+
+      <div className="section-card">
+        <BrowseListings listings={listings} getListings={getListings} makeOffer={makeOffer} />
+      </div>
+
+      <div className="section-card">
+        <SellBook addListing={addListing} />
+      </div>
+
+      <div className="section-card">
+        <MyBooks
+          myListings={myListings}
+          myOffers={myOffers}
+          listing={listing}
+          showMyBooks={showMyBooks}
+          getListing={getListing}
+          changePrice={changePrice}
+          removeListing={removeListing}
+          decideOffer={decideOffer}
+          markSold={markSold}
+        />
+      </div>
+    </div>
   );
 }
 
