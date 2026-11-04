@@ -48,3 +48,97 @@ def change_price(listing_id: int, seller_roll=None, price: int=None):
     if price is None or price < 10 or price > 2000:
         raise HTTPException(status_code=422, detail="Price must be between 10 and 2000")
     return functions.update_price(listing_id=listing_id, new_price=price)
+
+
+# E5 removes a listing
+@app.delete("/listings/{listing_id}")
+def remove_listing(listing_id: int, seller_roll: str = None):
+    if not seller_roll:
+        raise HTTPException(status_code=422, detail="Seller roll is required")
+    listing = functions.get_listing(listing_id=listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if listing["seller_roll"] != seller_roll:
+        raise HTTPException(status_code=403, detail="You're not allowed to do this")
+    if listing["status"] != "available":
+        raise HTTPException(status_code=400, detail="Cannot remove a listing that is not available")
+    return functions.delete_listing(listing_id=listing_id)
+
+
+# E6 makes an offer
+@app.post("/offers")
+def make_offer(listing_id: int = None, buyer_roll: str = None, offer_price: int = None):
+    if not listing_id or not buyer_roll or offer_price is None:
+        raise HTTPException(status_code=422, detail="Missing required field")
+    listing = functions.get_listing(listing_id=listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if offer_price < 1 or offer_price > listing["price"]:
+        raise HTTPException(status_code=422, detail="An offer price must be between 1 and the asking price")
+    if listing["seller_roll"] == buyer_roll:
+        raise HTTPException(status_code=400, detail="You can't make an offer on your own book")
+    if listing["status"] != "available":
+        raise HTTPException(status_code=400, detail="Listing is not available")
+    if functions.has_pending_offer(listing_id=listing_id, buyer_roll=buyer_roll):
+        raise HTTPException(status_code=400, detail="You already have a pending offer on this listing")
+    return functions.add_offer(listing_id=listing_id, buyer_roll=buyer_roll, offer_price=offer_price)
+
+
+# E7 accepts or declines an offer
+@app.patch("/offers/{offer_id}")
+def decide_offer(offer_id: int, seller_roll: str = None, action: str = None, status: str = None):
+    act = action if action is not None else status
+    if not seller_roll:
+        raise HTTPException(status_code=422, detail="Seller roll is required")
+    if not act:
+        raise HTTPException(status_code=422, detail="Action is required")
+
+    act_lower = str(act).lower().strip()
+    if act_lower not in ["accept", "accepted", "decline", "declined"]:
+        raise HTTPException(status_code=422, detail="Action must be 'accept' or 'decline'")
+
+    offer = functions.get_offer(offer_id=offer_id)
+    if offer is None:
+        raise HTTPException(status_code=404, detail="Offer not found")
+
+    listing = functions.get_listing(listing_id=offer["listing_id"])
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    if listing["seller_roll"] != seller_roll:
+        raise HTTPException(status_code=403, detail="You're not allowed to do this")
+
+    if offer["status"] != "pending":
+        raise HTTPException(status_code=400, detail="Offer is not pending")
+
+    if act_lower in ["accept", "accepted"] and listing["status"] != "available":
+        raise HTTPException(status_code=400, detail="Listing is not available")
+
+    return functions.update_offer_status(offer_id=offer_id, action=act_lower)
+
+
+# E8 marks a listing sold
+@app.patch("/listings/{listing_id}/sold")
+def mark_listing_sold(listing_id: int, seller_roll=None):
+    listing = functions.get_listing(listing_id=listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if not seller_roll:
+        raise HTTPException(status_code=422, detail="Missing seller roll number")
+    if listing["seller_roll"] != seller_roll:
+        raise HTTPException(status_code=403, detail="Only seller can mark the book sold")
+    if listing["status"] != "reserved":
+        raise HTTPException(status_code=400, detail="Only a reserved book can be marked sold")
+    return functions.mark_sold(listing_id=listing_id)
+
+
+# E9 gets one student's listings with their number of pending offers
+@app.get("/students/{roll_no}/listings")
+def student_listings(roll_no: str):
+    return functions.get_student_listings(roll_no=roll_no)
+
+
+# E10 gets one student's offers with the book's title and asking price
+@app.get("/students/{roll_no}/offers")
+def student_offers(roll_no: str):
+    return functions.get_student_offers(roll_no=roll_no)
