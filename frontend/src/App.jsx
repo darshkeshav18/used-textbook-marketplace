@@ -40,11 +40,11 @@ function App() {
   // E3 adds a book to listing
   function addListing(sellerRoll, title, subject, condition, price) {
     setMessage("");
-    fetch(API_URL + "/listings?seller_roll=" + sellerRoll + "&title=" + title + "&subject=" + subject + "&condition=" + condition + "&price=" + price, 
-      { 
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({seller_roll: sellerRoll, title: title, subject: subject, condition: condition, price: price}),
+    fetch(API_URL + "/listings?seller_roll=" + sellerRoll + "&title=" + title + "&subject=" + subject + "&condition=" + condition + "&price=" + price,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seller_roll: sellerRoll, title: title, subject: subject, condition: condition, price: price }),
       })
       .then((response) => response.json())
       .then((data) => setMessage(data.detail ? data.detail : ""))
@@ -54,11 +54,11 @@ function App() {
   // E4 changes the price of a book on lisiting
   function changePrice(id, sellerRoll, price) {
     setMessage("");
-    fetch(API_URL + "/listings/" + id + "/price?seller_roll=" + sellerRoll + "&price=" + price, 
+    fetch(API_URL + "/listings/" + id + "/price?seller_roll=" + sellerRoll + "&price=" + price,
       {
-      method: "PATCH",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({seller_roll: sellerRoll, price: price}),
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seller_roll: sellerRoll, price: price }),
       })
       .then((response) => response.json())
       .then((data) => data.detail ? setMessage(data.detail) : getListing(id))
@@ -75,10 +75,10 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => (data.detail ? setMessage(data.detail) : setMessage("Listing removed!")))
-      .then(() => getListings()); // reload so the removed book is gone
+      .then(() => getListings()); // reload so the removed book is gone like puff
   }
 
-  // E6 makes an offer on a listing
+  // E6 make an offer on a listing
   function makeOffer(listingId, buyerRoll, offerPrice) {
     setMessage("");
     fetch(API_URL + "/offers?listing_id=" + listingId + "&buyer_roll=" + buyerRoll + "&offer_price=" + offerPrice, {
