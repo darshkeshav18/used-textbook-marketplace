@@ -5,6 +5,7 @@ function BrowseListings({ listings, getListings, makeOffer }) {
   const [subject, setSubject] = useState("");
   const [condition, setCondition] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [note, setNote] = useState(""); // the error message for the search
 
   return (
     <>
@@ -26,8 +27,9 @@ function BrowseListings({ listings, getListings, makeOffer }) {
         <option value="old">old</option>
       </select>
 
-      <input placeholder="Max price" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-      <button onClick={() => getListings(subject, condition, maxPrice)}>Search</button>
+      <input type="number" placeholder="Max price" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+      <p>{note}</p>
+      <button onClick={() => getListings(subject, condition, maxPrice, setNote)}>Search</button>
 
       <ul className="products">
         {listings.map((listing) => (

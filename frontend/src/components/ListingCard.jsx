@@ -3,6 +3,7 @@ import { useState } from "react";
 function ListingCard({ listing, makeOffer }) {
   const [buyerRoll, setBuyerRoll] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
+  const [note, setNote] = useState(""); // the error or success message for this card's offer
 
   return (
     <li className="product">
@@ -15,7 +16,8 @@ function ListingCard({ listing, makeOffer }) {
       <h3>Make offer</h3>
       <input placeholder="Your roll number" value={buyerRoll} onChange={(e) => setBuyerRoll(e.target.value)} />
       <input placeholder="Offer price" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} />
-      <button onClick={() => makeOffer(listing.id, buyerRoll, offerPrice)}>Make offer</button>
+      <p>{note}</p>
+      <button onClick={() => makeOffer(listing.id, buyerRoll, offerPrice, setNote)}>Make offer</button>
     </li>
   );
 }
