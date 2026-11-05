@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import BrowseListings from "./components/BrowseListings";
 import SellBook from "./components/SellBooks";
 import MyBooks from "./components/MyBooks";
@@ -10,12 +10,15 @@ function App() {
   const [listing, setListing] = useState([]);
   const [myListings, setMyListings] = useState([]);
   const [myOffers, setMyOffers] = useState([]);
-  const [message, setMessage] = useState(""); // GUYS MAKE SURE YOU USE THIS TO STORE THE API ERROR MESSAGES SO THE USER CAN SEE IT
+  // message is only for the background reloads (page load and refreshes after an action)
+  // every button and box now shows its own error next to it, using the setNote it is given
+  const [message, setMessage] = useState("");
 
   // sam's code goes here
 
   // E1 function that gets all listings along with the url filters 
-  function getListings(subject, condition, maxPrice) {
+  function getListings(subject, condition, maxPrice, setNote) {
+    setNote("");
     const subjectFilter = subject ? "subject=" + subject + "&" : "";
     const conditinFilter = condition ? "condition=" + condition + "&" : "";
     const priceFilter = maxPrice ? "max_price=" + maxPrice : "";
@@ -24,7 +27,7 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Error loading listings");
+          setNote(typeof data.detail === "string" ? data.detail : "Error loading listings");
         } else {
           setListings(data);
         }
@@ -33,16 +36,17 @@ function App() {
 
   // E1 shows all listins when page loads
   useEffect(() => {
-    getListings();
+    getListings("", "", "", setMessage);
   }, []);
 
   // E2 takes listing id and gets specific listing
-  function getListing(id) {
+  function getListing(id, setNote) {
+    setNote("");
     fetch(API_URL + "/listings/" + id)
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Listing not found");
+          setNote(typeof data.detail === "string" ? data.detail : "Listing not found");
         } else {
           setListing([data]);
         }
@@ -50,8 +54,8 @@ function App() {
   }
 
   // E3 adds a book to listing
-  function addListing(sellerRoll, title, subject, condition, price) {
-    setMessage("");
+  function addListing(sellerRoll, title, subject, condition, price, setNote) {
+    setNote("");
     fetch(API_URL + "/listings?seller_roll=" + sellerRoll + "&title=" + title + "&subject=" + subject + "&condition=" + condition + "&price=" + price,
       {
         method: "POST",
@@ -61,17 +65,17 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          setMessage("Book listed successfully!");
-          getListings();
+          setNote("Book listed successfully!");
+          getListings("", "", "", setMessage);
         }
       });
   }
 
   // E4 changes the price of a book on lisiting
-  function changePrice(id, sellerRoll, price) {
-    setMessage("");
+  function changePrice(id, sellerRoll, price, setNote) {
+    setNote("");
     fetch(API_URL + "/listings/" + id + "/price?seller_roll=" + sellerRoll + "&price=" + price,
       {
         method: "PATCH",
@@ -81,12 +85,12 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          setMessage("Price updated successfully!");
-          getListing(id);
-          getListings();
-          getMyListings(sellerRoll);
+          setNote("Price updated successfully!");
+          getListing(id, setMessage);
+          getListings("", "", "", setMessage);
+          getMyListings(sellerRoll, setMessage);
         }
       });
   }
@@ -94,56 +98,55 @@ function App() {
   // aryan's code goes here
 
   // E5 removes a listing
-  function removeListing(id, sellerRoll) {
-    setMessage("");
+  function removeListing(id, sellerRoll, setNote) {
+    setNote("");
     fetch(API_URL + "/listings/" + id + "?seller_roll=" + sellerRoll, {
       method: "DELETE",
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          setMessage("Listing removed!");
-          getListings();
-          getMyListings(sellerRoll);
+          getListings("", "", "", setMessage);
+          getMyListings(sellerRoll, setMessage);
           setListing([]);
         }
       });
   }
 
   // E6 make an offer on a listing
-  function makeOffer(listingId, buyerRoll, offerPrice) {
-    setMessage("");
+  function makeOffer(listingId, buyerRoll, offerPrice, setNote) {
+    setNote("");
     fetch(API_URL + "/offers?listing_id=" + listingId + "&buyer_roll=" + buyerRoll + "&offer_price=" + offerPrice, {
       method: "POST",
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          setMessage("Offer placed successfully!");
-          getListing(listingId);
+          setNote("Offer placed successfully!");
+          getListing(listingId, setMessage);
         }
       });
   }
 
   // E7 accepts or declines an offer
-  function decideOffer(offerId, sellerRoll, action, listingId) {
-    setMessage("");
+  function decideOffer(offerId, sellerRoll, action, listingId, setNote) {
+    setNote("");
     fetch(API_URL + "/offers/" + offerId + "?seller_roll=" + sellerRoll + "&action=" + action, {
       method: "PATCH",
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          setMessage("Offer " + action + "ed!");
-          getListings();
-          getMyListings(sellerRoll);
-          if (listingId) getListing(listingId);
+          setNote("Offer updated!");
+          getListings("", "", "", setMessage);
+          getMyListings(sellerRoll, setMessage);
+          if (listingId) getListing(listingId, setMessage);
         }
       });
   }
@@ -151,12 +154,12 @@ function App() {
   // darsh's code goes here
 
   // E9 gets one student's listings, each with its number of pending offers
-  function getMyListings(rollNo) {
+  function getMyListings(rollNo, setNote) {
     fetch(API_URL + "/students/" + rollNo + "/listings")
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Student not found");
+          setNote(typeof data.detail === "string" ? data.detail : "Student not found");
         } else {
           setMyListings(data);
         }
@@ -164,12 +167,12 @@ function App() {
   }
 
   // E10 gets one student's offers, each with the book's title and asking price
-  function getMyOffers(rollNo) {
+  function getMyOffers(rollNo, setNote) {
     fetch(API_URL + "/students/" + rollNo + "/offers")
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Student not found");
+          setNote(typeof data.detail === "string" ? data.detail : "Student not found");
         } else {
           setMyOffers(data);
         }
@@ -177,28 +180,29 @@ function App() {
   }
 
   // E9 + E10 used by the Show button in My books
-  function showMyBooks(rollNo) {
+  function showMyBooks(rollNo, setNote) {
     if (rollNo === "") {
-      setMessage("Enter a roll number");
+      setNote("Enter a roll number");
     } else {
-      setMessage("");
-      getMyListings(rollNo);
-      getMyOffers(rollNo);
+      setNote("");
+      getMyListings(rollNo, setNote);
+      getMyOffers(rollNo, setNote);
     }
   }
 
   // E8 marks a listing sold
-  function markSold(listingId, sellerRoll) {
-    setMessage("");
+  function markSold(listingId, sellerRoll, setNote) {
+    setNote("");
     fetch(API_URL + "/listings/" + listingId + "/sold?seller_roll=" + sellerRoll, { method: "PATCH" })
       .then((response) => response.json())
       .then((data) => {
         if (data.detail) {
-          setMessage(typeof data.detail === "string" ? data.detail : "Invalid input");
+          setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
-          getMyListings(sellerRoll);
-          getListings();
-          getListing(listingId);
+          setNote("Marked as sold!");
+          getMyListings(sellerRoll, setMessage);
+          getListings("", "", "", setMessage);
+          getListing(listingId, setMessage);
         }
       });
   }

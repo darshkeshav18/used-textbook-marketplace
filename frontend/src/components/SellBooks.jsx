@@ -8,6 +8,7 @@ function SellBook({addListing}) {
   const [subject, setSubject] = useState("");
   const [condition, setCondition] = useState("");
   const [price, setPrice] = useState("");
+  const [note, setNote] = useState(""); // the error or success message for this form
 
   return (
     <>
@@ -33,8 +34,10 @@ function SellBook({addListing}) {
 
       <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} />
 
+      <p>{note}</p>
+
       <button onClick={() => 
-        addListing(sellerRoll, title, subject, condition, price?price : 0)}>List book </button>
+        addListing(sellerRoll, title, subject, condition, price?price : 0, setNote)}>List book </button>
     </>
   );
 }
