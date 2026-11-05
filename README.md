@@ -65,3 +65,15 @@ One SQLite file, `textbook.db`, with two tables:
    npm install
    npm run dev
    ```
+   
+### Proof of work
+
+Our App
+
+1. Frontend
+
+<img width="1920" height="1200" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/7749afec-4720-4802-b444-286a19be36ae" />
+
+2. Backend
+   
+<img width="1920" height="1200" alt="Screenshot (3)" src="https://github.com/user-attachments/assets/d2189995-a7ab-4652-8cea-5c084b022e3f" />
