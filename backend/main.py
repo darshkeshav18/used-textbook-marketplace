@@ -59,7 +59,7 @@ def change_price(listing_id: int, seller_roll=None, price: int=None):
     return functions.update_price(listing_id=listing_id, new_price=price)
 
 
-# E5 removes a listing
+# E5 yeets the listing out of existence so juniors stop dm'ing the seller
 @app.delete("/listings/{listing_id}")
 def remove_listing(listing_id: int, seller_roll: str = None):
     if not seller_roll:
@@ -74,7 +74,7 @@ def remove_listing(listing_id: int, seller_roll: str = None):
     return functions.delete_listing(listing_id=listing_id)
 
 
-# E6 makes an offer
+# E6 broke junior attempts to bargain for their degree
 @app.post("/offers")
 def make_offer(listing_id: int = None, buyer_roll: str = None, offer_price: int = None):
     if not listing_id or not buyer_roll or offer_price is None:
@@ -93,7 +93,7 @@ def make_offer(listing_id: int = None, buyer_roll: str = None, offer_price: int 
     return functions.add_offer(listing_id=listing_id, buyer_roll=buyer_roll, offer_price=offer_price)
 
 
-# E7 will ddo accepts or declines an offer
+# E7 seller either secures the bag or tells the junior to touch grass
 @app.patch("/offers/{offer_id}")
 def decide_offer(offer_id: int, seller_roll: str = None, action: str = None, status: str = None):
     act = action if action is not None else status

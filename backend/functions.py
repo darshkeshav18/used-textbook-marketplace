@@ -156,7 +156,7 @@ def delete_listing(listing_id):
     return {"message": "Listing removed successfully"}
 
 
-# E6 helper funct to check if buyer already has a pending offer on this listing
+# E6 helper funct to check if this kid already sent an offer and is spamming
 def has_pending_offer(listing_id, buyer_roll):
     session = Session(engine)
     existing = session.query(Offer).filter(
@@ -168,7 +168,7 @@ def has_pending_offer(listing_id, buyer_roll):
     return existing is not None
 
 
-# E6 make an offer
+# E6 drops the offer into the db and hopes for the best
 def add_offer(listing_id, buyer_roll, offer_price):
     session = Session(engine)
     offer = Offer(
@@ -185,7 +185,7 @@ def add_offer(listing_id, buyer_roll, offer_price):
     return data
 
 
-# E7 just a helper funct wrote to assiste verification
+# E7 quick peek to grab the offer details
 def get_offer(offer_id):
     session = Session(engine)
     offer = session.get(Offer, offer_id)
@@ -197,7 +197,7 @@ def get_offer(offer_id):
     return data
 
 
-# E7 accept or decline offer
+# E7 seals the deal or shatters the junior's dreams
 def update_offer_status(offer_id, action):
     session = Session(engine)
     offer = session.get(Offer, offer_id)
