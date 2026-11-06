@@ -13,7 +13,7 @@ function SellBook({addListing}) {
   return (
     <>
       <h2>Sell a book</h2>
-      <input placeholder="Your roll number" value={sellerRoll} onChange={(e) => setSellerRoll(e.target.value)} />
+      <input placeholder="Roll number (Ex: 001)" value={sellerRoll} onChange={(e) => setSellerRoll(e.target.value)} />
       <input placeholder="Book title" value={title} onChange={(e) => setTitle(e.target.value)} />
 
       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
@@ -32,7 +32,7 @@ function SellBook({addListing}) {
         <option value="old">old </option>
       </select>
 
-      <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} />
+      <input type="number" placeholder="Price (Max 2000)" value={price} onChange={(e) => setPrice(e.target.value)} />
 
       <p>{note}</p>
 

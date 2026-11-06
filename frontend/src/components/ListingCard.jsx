@@ -14,8 +14,8 @@ function ListingCard({ listing, makeOffer }) {
       <p>Seller: {listing.seller_roll}</p>
 
       <h3>Make offer</h3>
-      <input placeholder="Your roll number" value={buyerRoll} onChange={(e) => setBuyerRoll(e.target.value)} />
-      <input placeholder="Offer price" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} />
+      <input placeholder="Roll number (Ex: 001)" value={buyerRoll} onChange={(e) => setBuyerRoll(e.target.value)} />
+      <input placeholder="Offer price (1 - LP)" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} />
       <p>{note}</p>
       <button onClick={() => makeOffer(listing.id, buyerRoll, offerPrice, setNote)}>Make offer</button>
     </li>

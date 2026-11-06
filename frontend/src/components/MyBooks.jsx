@@ -13,7 +13,7 @@ function MyBooks({myListings, myOffers, listing, showMyBooks, getListing, change
   return (
     <>
       <h2>My books</h2>
-      <input placeholder="Your roll number" value={rollNo} onChange={(e) => setRollNo(e.target.value)} />
+      <input placeholder="Roll number (Ex : 001)" value={rollNo} onChange={(e) => setRollNo(e.target.value)} />
       <button onClick={() => showMyBooks(rollNo, setShowNote)}>Show</button>
       <p>{showNote}</p>
 
@@ -31,7 +31,7 @@ function MyBooks({myListings, myOffers, listing, showMyBooks, getListing, change
           <h3>{book.title}</h3>
           <p>₹{book.price} | {book.status}</p>
 
-          <input type="number" placeholder="New price" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
+          <input type="number" placeholder="New price (Max 2000)" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
           <button onClick={() => changePrice(book.id, rollNo, newPrice * 1, setPriceNote)}>Save</button>
           <p>{priceNote}</p>
 

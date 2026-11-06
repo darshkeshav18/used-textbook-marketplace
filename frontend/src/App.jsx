@@ -95,9 +95,9 @@ function App() {
       });
   }
 
-  // aryan's code goes here
+  // aryan's code goes here (manifesting this works on first try)
 
-  // E5 removes a listing
+  // E5 deletes the listing bc senior either passed the exam or gave up
   function removeListing(id, sellerRoll, setNote) {
     setNote("");
     fetch(API_URL + "/listings/" + id + "?seller_roll=" + sellerRoll, {
@@ -108,6 +108,7 @@ function App() {
         if (data.detail) {
           setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
+          // poof, book is gone, refresh everything so nobody tries to buy air
           getListings("", "", "", setMessage);
           getMyListings(sellerRoll, setMessage);
           setListing([]);
@@ -115,7 +116,7 @@ function App() {
       });
   }
 
-  // E6 make an offer on a listing
+  // E6 broke junior shooting their shot with a lowball offer
   function makeOffer(listingId, buyerRoll, offerPrice, setNote) {
     setNote("");
     fetch(API_URL + "/offers?listing_id=" + listingId + "&buyer_roll=" + buyerRoll + "&offer_price=" + offerPrice, {
@@ -127,12 +128,13 @@ function App() {
           setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
           setNote("Offer placed successfully!");
+          // reload the offers so senior can see the new bid
           getListing(listingId, setMessage);
         }
       });
   }
 
-  // E7 accepts or declines an offer
+  // E7 senior deciding if they want the cash or if the offer was pure disrespect
   function decideOffer(offerId, sellerRoll, action, listingId, setNote) {
     setNote("");
     fetch(API_URL + "/offers/" + offerId + "?seller_roll=" + sellerRoll + "&action=" + action, {
@@ -144,6 +146,7 @@ function App() {
           setNote(typeof data.detail === "string" ? data.detail : "Invalid input");
         } else {
           setNote("Offer updated!");
+          // refresh all lists so the book gets marked reserved or back to square one
           getListings("", "", "", setMessage);
           getMyListings(sellerRoll, setMessage);
           if (listingId) getListing(listingId, setMessage);

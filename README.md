@@ -33,7 +33,7 @@ One SQLite file, `textbook.db`, with two tables:
 | Member | Files | Endpoints | What they did |
 |:---------:|:---------|:------------:|:-----------------|
 | Samhita | App.jsx <br>SellBook.jsx<br>MyBooks.jsx | E1, E2, E3, E4 | Wrote the fetch functions for E1 to E4 in App.jsx <br>Built the Sell a book form (E3)<br>Built the My books dashboard |
-| Aryan | | | |
+| Aryan | App.jsx<br>index.css<br>App.css | E5, E6, E7 | Wrote the fetch functions for E5 to E7 in App.jsx (remove listing, make offer, accept/decline offer)<br>Designed and implemented the 2D retro pixel RPG aesthetic and styling |
 | Darsh | App.jsx<br>BrowseListings.jsx<br>ListingCard.jsx | E8, E9, E10 (and E1, E6 through Browse Listing) | Wrote the fetch functions for E8 to E10 in App.jsx<br>Built the Browse listings page with its subject, condition and max price filters<br>Built the listing card with the Make offer boxes and button |
 
 ## How to Run
