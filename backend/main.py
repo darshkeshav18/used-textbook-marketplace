@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Body
 from fastapi.middleware.cors import CORSMiddleware
 import functions
+from models import LoginRequest, SignupRequest, TokenPair
 
 app = FastAPI(
     title = "Used Textbook Marketplace API"
@@ -152,3 +153,27 @@ def student_offers(roll_no: str):
     return functions.get_student_offers(roll_no=roll_no)
 
 
+# verify login
+@app.post("/login", response_model=TokenPair)
+def login(creds: LoginRequest):
+    token = functions.verify_login(username=creds.username, password=creds.password)
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return token
+
+# refresh token
+@app.post(path="/refresh")
+def refresh(refresh_token = Header(None)):
+    user = functions.verify_token(token=refresh_token, token_type="refresh")
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or Expired refresh token")
+    access_token = functions.create_token(user_id=user.user_id, user_type=user.user_type, username=user.username, token_type="access")
+    return {"access_token": access_token}
+
+
+# registers a user, admin is not allowed here because the admin is hard coded
+@app.post(path="/signup")
+def register_user(creds: SignupRequest):
+    if functions.register_user(username=creds.username, password=creds.password, user_type=creds.user_type):
+        return {"message": "User registered sucessfully"}
+    raise HTTPException(status_code=400, detail="User already exists")
