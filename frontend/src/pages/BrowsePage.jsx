@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ListingCard from "./ListingCard";
 
-function BrowseListings({ listings, getListings, makeOffer }) {
+function BrowsePage({ listings, getListings, makeOffer }) {
   const [subject, setSubject] = useState("");
   const [condition, setCondition] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -40,4 +40,4 @@ function BrowseListings({ listings, getListings, makeOffer }) {
   );
 }
 
-export default BrowseListings;
+export default BrowsePage;

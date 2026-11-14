@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 
-function SellBook({addListing}) {
+function SellPage({addListing}) {
   const [sellerRoll, setSellerRoll] = useState("");
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
@@ -42,4 +42,4 @@ function SellBook({addListing}) {
   );
 }
 
-export default SellBook;
+export default SellPage;

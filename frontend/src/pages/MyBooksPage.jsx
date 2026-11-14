@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-function MyBooks({myListings, myOffers, listing, showMyBooks, getListing, changePrice, removeListing, decideOffer, markSold}) {
+function MyBooksPage({myListings, myOffers, listing, showMyBooks, getListing, changePrice, removeListing, decideOffer, markSold}) {
   const [rollNo, setRollNo] = useState("");
   const [newPrice, setNewPrice] = useState("");
 
@@ -60,4 +60,4 @@ function MyBooks({myListings, myOffers, listing, showMyBooks, getListing, change
   );
 }
 
-export default MyBooks;
+export default MyBooksPage;
